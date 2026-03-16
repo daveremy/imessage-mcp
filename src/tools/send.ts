@@ -17,9 +17,10 @@ export async function handleSend(args: {
     return {
       content: [{ type: 'text', text: `Message sent to chat ${args.chatId}.` }],
     };
-  } catch (e: any) {
+  } catch (e: unknown) {
+    const msg = e instanceof Error ? e.message : String(e);
     return {
-      content: [{ type: 'text', text: `Failed to send message: ${e.message}` }],
+      content: [{ type: 'text', text: `Failed to send message: ${msg}` }],
     };
   }
 }

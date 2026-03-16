@@ -1,7 +1,6 @@
 import { DatabaseSync } from 'node:sqlite';
 import { homedir } from 'os';
-import { existsSync } from 'fs';
-import type { ChatRow, MessageRow, HandleRow, AttachmentRow, ParticipantInfo, PaginationCursor } from './types.js';
+import type { ChatRow, AttachmentRow, ParticipantInfo, PaginationCursor } from './types.js';
 import { extractTextFromAttributedBody } from './typedstream.js';
 
 const CHAT_DB_PATH = `${homedir()}/Library/Messages/chat.db`;
@@ -10,21 +9,20 @@ const CHAT_DB_PATH = `${homedir()}/Library/Messages/chat.db`;
 const APPLE_EPOCH_OFFSET = 978307200n;
 
 let _db: DatabaseSync | null = null;
+const _stmtCache = new Map<string, ReturnType<DatabaseSync['prepare']>>();
 
 export function getDbPath(): string {
   return CHAT_DB_PATH;
 }
 
 export function canAccessDb(): { ok: boolean; error?: string } {
-  if (!existsSync(CHAT_DB_PATH)) {
-    return { ok: false, error: `Database not found at ${CHAT_DB_PATH}. Full Disk Access may be required.` };
-  }
   try {
     const db = openDb();
     db.prepare('SELECT 1 FROM message LIMIT 1').get();
     return { ok: true };
-  } catch (e: any) {
-    return { ok: false, error: e.message };
+  } catch (e: unknown) {
+    const msg = e instanceof Error ? e.message : String(e);
+    return { ok: false, error: `${msg}. Full Disk Access may be required — add your terminal app in System Settings → Privacy & Security.` };
   }
 }
 
@@ -37,12 +35,17 @@ function openDb(): DatabaseSync {
 /** Override the DB connection for testing. Pass null to reset. */
 export function _setDbForTesting(db: DatabaseSync | null): void {
   _db = db;
+  _stmtCache.clear();
 }
 
-/** Prepare a statement with BigInt support enabled (needed for Apple nanosecond timestamps). */
+/** Prepare a statement with BigInt support, caching for reuse. */
 function prepare(sql: string) {
-  const stmt = openDb().prepare(sql);
-  stmt.setReadBigInts(true);
+  let stmt = _stmtCache.get(sql);
+  if (!stmt) {
+    stmt = openDb().prepare(sql);
+    stmt.setReadBigInts(true);
+    _stmtCache.set(sql, stmt);
+  }
   return stmt;
 }
 
@@ -64,13 +67,15 @@ export function formatDate(date: Date | null): string {
   });
 }
 
+interface CountRow { c: bigint | number }
+
 export function getChatCount(): number {
-  const row = prepare('SELECT COUNT(*) as c FROM chat').get() as any;
+  const row = prepare('SELECT COUNT(*) as c FROM chat').get() as unknown as CountRow;
   return Number(row.c);
 }
 
 export function getMessageCount(): number {
-  const row = prepare('SELECT COUNT(*) as c FROM message').get() as any;
+  const row = prepare('SELECT COUNT(*) as c FROM message').get() as unknown as CountRow;
   return Number(row.c);
 }
 
@@ -177,7 +182,7 @@ export function getMessages(
   cursor?: PaginationCursor
 ): { messages: RawMessageRow[]; nextCursor: PaginationCursor | null } {
   let query: string;
-  let params: any[];
+  let params: (number | bigint)[];
 
   if (cursor) {
     query = `
@@ -277,7 +282,7 @@ export function extractMessageText(msg: RawMessageRow): string {
 
 export function getRecentMessagesForSearch(chatId: number | null, maxMessages: number): RawMessageRow[] {
   let query: string;
-  let params: any[];
+  let params: (number | bigint)[];
 
   if (chatId !== null) {
     query = `
@@ -317,10 +322,10 @@ export function getTotalMessageCount(chatId: number | null): number {
       FROM message m
       JOIN chat_message_join cmj ON cmj.message_id = m.ROWID
       WHERE cmj.chat_id = ?
-    `).get(chatId) as any;
+    `).get(chatId) as unknown as CountRow;
     return Number(row.c);
   }
-  const row = prepare('SELECT COUNT(*) as c FROM message').get() as any;
+  const row = prepare('SELECT COUNT(*) as c FROM message').get() as unknown as CountRow;
   return Number(row.c);
 }
 

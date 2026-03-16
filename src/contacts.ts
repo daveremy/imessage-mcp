@@ -1,24 +1,26 @@
 import { DatabaseSync } from 'node:sqlite';
 import { homedir } from 'os';
 import { globSync } from 'glob';
-import { existsSync } from 'fs';
 
 const AB_GLOB = `${homedir()}/Library/Application Support/AddressBook/Sources/*/AddressBook-v*.abcddb`;
 
 let _contactMap: Map<string, string> | null = null;
-let _contactsAccessible: boolean | null = null;
-let _abFilesExist: boolean | null = null;
+let _abFiles: string[] | null = null;
 
 /** Override the contact map for testing. Pass null to reset. */
 export function _setContactMapForTesting(map: Map<string, string> | null): void {
   _contactMap = map;
 }
 
+function getAbFiles(): string[] {
+  // Only cache non-empty results so we retry if contacts weren't available yet
+  if (_abFiles !== null && _abFiles.length > 0) return _abFiles;
+  _abFiles = globSync(AB_GLOB);
+  return _abFiles;
+}
+
 export function contactsDbExists(): boolean {
-  if (_abFilesExist !== null) return _abFilesExist;
-  const files = globSync(AB_GLOB);
-  _abFilesExist = files.length > 0;
-  return _abFilesExist;
+  return getAbFiles().length > 0;
 }
 
 export function canAccessContacts(): { ok: boolean; error?: string; filesExist: boolean } {
@@ -29,8 +31,9 @@ export function canAccessContacts(): { ok: boolean; error?: string; filesExist: 
   try {
     loadContacts();
     return { ok: true, filesExist: true };
-  } catch (e: any) {
-    return { ok: false, error: e.message, filesExist: true };
+  } catch (e: unknown) {
+    const msg = e instanceof Error ? e.message : String(e);
+    return { ok: false, error: msg, filesExist: true };
   }
 }
 
@@ -52,7 +55,7 @@ function loadContacts(): Map<string, string> {
   if (_contactMap) return _contactMap;
 
   const map = new Map<string, string>();
-  const files = globSync(AB_GLOB);
+  const files = getAbFiles();
 
   for (const file of files) {
     try {
@@ -123,7 +126,6 @@ function loadContacts(): Map<string, string> {
   }
 
   _contactMap = map;
-  _contactsAccessible = map.size > 0;
   return map;
 }
 

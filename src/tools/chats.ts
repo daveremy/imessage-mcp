@@ -1,4 +1,5 @@
 import { getChats, getChatParticipants, appleNsToDate, formatDate } from '../db.js';
+import type { ChatRow } from '../types.js';
 import { resolveHandle } from '../contacts.js';
 
 export function handleChats(args: { limit?: number }): { content: Array<{ type: 'text'; text: string }> } {
@@ -35,7 +36,7 @@ export function handleChats(args: { limit?: number }): { content: Array<{ type: 
   return { content: [{ type: 'text', text: lines.join('\n') }] };
 }
 
-function formatGroupName(chat: any): string {
+function formatGroupName(chat: ChatRow): string {
   if (chat.display_name) return chat.display_name;
 
   // Fall back to resolved participant names
@@ -48,7 +49,7 @@ function formatGroupName(chat: any): string {
   return names.slice(0, 4).join(', ') + ` and ${names.length - 4} others`;
 }
 
-function format1on1Name(chat: any): string {
+function format1on1Name(chat: ChatRow): string {
   const participants = getChatParticipants(Number(chat.ROWID));
   if (participants.length === 0) {
     // Extract handle from guid: "iMessage;-;+1234567890"
