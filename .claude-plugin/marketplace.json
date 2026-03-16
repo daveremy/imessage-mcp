@@ -1,0 +1,10 @@
+{
+  "name": "imessage-mcp-plugins",
+  "owner": { "name": "daveremy" },
+  "plugins": [{
+    "name": "imessage-mcp",
+    "source": { "source": "npm", "package": "@daveremy/imessage-mcp" },
+    "description": "Read and send iMessages — contact resolution, message search, group chats, reactions",
+    "version": "0.1.0"
+  }]
+}

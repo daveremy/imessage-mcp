@@ -1,7 +1,10 @@
 {
   "name": "imessage-mcp",
-  "description": "Read and send iMessages from Claude Code",
+  "description": "Read and send iMessages — contact resolution, message search, group chats, reactions",
   "version": "0.1.0",
+  "author": { "name": "daveremy" },
+  "homepage": "https://github.com/daveremy/imessage-mcp",
+  "repository": "https://github.com/daveremy/imessage-mcp",
   "mcpServers": {
     "imessage-mcp": {
       "command": "npx",
