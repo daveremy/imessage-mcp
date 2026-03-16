@@ -69,22 +69,16 @@ Multiple AddressBook source DBs (iCloud, Google, Exchange) can have overlapping 
 
 ## v2 — Infrastructure
 
-### Automated tests
-v1 uses manual CLI verification. Should add:
-- Fixture-based tests for typedstream parser with anonymized blobs
-- Date conversion unit tests (edge cases: zero, null, boundary dates)
-- Contact normalization tests (various phone formats)
-- SQL query result shape tests with a test fixture DB
+### ~~Automated tests~~ (DONE)
+98 tests added in v0.1.0: typedstream parser, contacts, date conversion, DB queries, tool handlers. Uses `node:test` with in-memory SQLite fixtures.
 
-**Source**: codex rounds 4, 7
+### ~~Native dependency~~ (RESOLVED)
+Switched from `better-sqlite3` to Node's built-in `node:sqlite` (Node >= 22). No native compilation needed.
 
-### Native dependency documentation
-`better-sqlite3` requires native compilation. README should note:
-- Xcode Command Line Tools requirement
-- M1 vs Intel prebuild availability
-- Potential `node-gyp` issues on different Node versions
+### N+1 query optimization
+Per-message handle lookups (`getHandleById` in the message loop) and per-chat participant lookups (`getChatParticipants` in the chats loop) create N+1 query patterns. For typical use (50 messages, 20 chats) this is fast enough, but could be batch-optimized with JOINs or pre-fetched lookup maps.
 
-**Source**: gemini round 5
+**Source**: code review (efficiency agent, 2026-03-16)
 
 ### TCC / Contacts permission detection
 Full Disk Access covers `chat.db` but AddressBook access may additionally require Contacts permission on some macOS versions. `im_status` should distinguish "file missing" vs "file exists but unreadable (TCC denied)".
