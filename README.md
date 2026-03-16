@@ -43,11 +43,19 @@ Run `imessage-mcp status` to verify everything is working.
 
 ### Claude Code plugin (recommended)
 
+Install directly from this repo:
+
+```bash
+claude plugin add daveremy/imessage-mcp
+```
+
+Or from the [daveremy-plugins marketplace](https://github.com/daveremy/claude-plugins) (includes all daveremy plugins):
+
 ```bash
 claude plugin add daveremy/claude-plugins --name imessage-mcp
 ```
 
-This installs from the [daveremy-plugins marketplace](https://github.com/daveremy/claude-plugins). Restart Claude Code and the `im_*` tools will appear automatically.
+Restart Claude Code and the `im_*` tools will appear automatically.
 
 ### Manual MCP config
 
