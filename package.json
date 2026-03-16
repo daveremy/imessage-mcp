@@ -28,6 +28,13 @@
     "macos"
   ],
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/daveremy/imessage-mcp.git"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.12.1",
     "glob": "^11.0.2",
