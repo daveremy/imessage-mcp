@@ -132,9 +132,10 @@ function resolveReactionTarget(associatedGuid: string | null): string {
   return `"${truncated}"`;
 }
 
-function formatBytes(bytes: number): string {
-  if (bytes === 0) return '0 bytes';
-  if (bytes < 1024) return `${bytes} bytes`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+function formatBytes(bytes: number | bigint): string {
+  const n = Number(bytes);
+  if (n === 0) return '0 bytes';
+  if (n < 1024) return `${n} bytes`;
+  if (n < 1024 * 1024) return `${(n / 1024).toFixed(1)} KB`;
+  return `${(n / (1024 * 1024)).toFixed(1)} MB`;
 }
