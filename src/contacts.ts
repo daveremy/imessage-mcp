@@ -9,6 +9,11 @@ let _contactMap: Map<string, string> | null = null;
 let _contactsAccessible: boolean | null = null;
 let _abFilesExist: boolean | null = null;
 
+/** Override the contact map for testing. Pass null to reset. */
+export function _setContactMapForTesting(map: Map<string, string> | null): void {
+  _contactMap = map;
+}
+
 export function contactsDbExists(): boolean {
   if (_abFilesExist !== null) return _abFilesExist;
   const files = globSync(AB_GLOB);
@@ -29,7 +34,8 @@ export function canAccessContacts(): { ok: boolean; error?: string; filesExist: 
   }
 }
 
-function normalizePhone(phone: string): string {
+/** Exported for testing. */
+export function normalizePhone(phone: string): string {
   const digits = phone.replace(/\D/g, '');
   if (digits.length === 10) {
     return '1' + digits; // US number, prepend country code
@@ -37,7 +43,8 @@ function normalizePhone(phone: string): string {
   return digits;
 }
 
-function suffixKey(digits: string): string {
+/** Exported for testing. */
+export function suffixKey(digits: string): string {
   return digits.slice(-10);
 }
 
@@ -120,7 +127,8 @@ function loadContacts(): Map<string, string> {
   return map;
 }
 
-function buildName(
+/** Exported for testing. */
+export function buildName(
   first: string | null,
   last: string | null,
   org: string | null,

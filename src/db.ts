@@ -34,6 +34,11 @@ function openDb(): DatabaseSync {
   return _db;
 }
 
+/** Override the DB connection for testing. Pass null to reset. */
+export function _setDbForTesting(db: DatabaseSync | null): void {
+  _db = db;
+}
+
 /** Prepare a statement with BigInt support enabled (needed for Apple nanosecond timestamps). */
 function prepare(sql: string) {
   const stmt = openDb().prepare(sql);
@@ -320,6 +325,6 @@ export function getTotalMessageCount(chatId: number | null): number {
 }
 
 export function getChatIdForMessage(messageRowId: number): number | null {
-  const row = prepare('SELECT chat_id FROM chat_message_join WHERE message_id = ?').get(messageRowId) as { chat_id: number } | undefined;
-  return row?.chat_id ?? null;
+  const row = prepare('SELECT chat_id FROM chat_message_join WHERE message_id = ?').get(messageRowId) as { chat_id: number | bigint } | undefined;
+  return row ? Number(row.chat_id) : null;
 }

@@ -15,6 +15,7 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsx src/mcp.ts",
+    "test": "tsx --test src/__tests__/*.test.ts",
     "prepack": "npm run build"
   },
   "os": [
