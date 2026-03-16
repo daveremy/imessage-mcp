@@ -1,5 +1,5 @@
 {
-  "name": "imessage-mcp",
+  "name": "@daveremy/imessage-mcp",
   "version": "0.1.0",
   "description": "MCP server for reading and sending iMessages from Claude Code",
   "type": "module",

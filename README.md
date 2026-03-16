@@ -50,7 +50,7 @@ Add to your project's `.mcp.json` or `~/.claude/mcp.json`:
   "mcpServers": {
     "imessage-mcp": {
       "command": "npx",
-      "args": ["-y", "imessage-mcp"]
+      "args": ["-y", "@daveremy/imessage-mcp"]
     }
   }
 }
@@ -61,9 +61,9 @@ Then restart Claude Code. The `im_*` tools will appear automatically.
 ### As a CLI tool
 
 ```bash
-npx imessage-mcp status       # verify access
-npx imessage-mcp chats        # list recent conversations
-npx imessage-mcp messages 42  # read messages from chat 42
+npx @daveremy/imessage-mcp status       # verify access
+npx @daveremy/imessage-mcp chats        # list recent conversations
+npx @daveremy/imessage-mcp messages 42  # read messages from chat 42
 ```
 
 ## Tools
