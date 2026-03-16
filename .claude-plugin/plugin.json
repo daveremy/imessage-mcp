@@ -1,0 +1,11 @@
+{
+  "name": "imessage-mcp",
+  "description": "Read and send iMessages from Claude Code",
+  "version": "0.1.0",
+  "mcpServers": {
+    "imessage-mcp": {
+      "command": "npx",
+      "args": ["-y", "imessage-mcp"]
+    }
+  }
+}

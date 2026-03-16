@@ -1,0 +1,41 @@
+{
+  "name": "imessage-mcp",
+  "version": "0.1.0",
+  "description": "MCP server for reading and sending iMessages from Claude Code",
+  "type": "module",
+  "main": "dist/mcp.js",
+  "bin": {
+    "imessage-mcp": "dist/cli.js"
+  },
+  "files": [
+    "dist/",
+    ".claude-plugin/",
+    "skills/"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx src/mcp.ts",
+    "prepack": "npm run build"
+  },
+  "os": [
+    "darwin"
+  ],
+  "keywords": [
+    "imessage",
+    "mcp",
+    "claude",
+    "messages",
+    "macos"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.1",
+    "glob": "^11.0.2",
+    "zod": "^3.25.67"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.30",
+    "tsx": "^4.19.4",
+    "typescript": "^5.8.3"
+  }
+}
